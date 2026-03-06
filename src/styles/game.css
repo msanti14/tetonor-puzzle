@@ -1,0 +1,589 @@
+/* =============================================
+   TETONOR - Estilos globales
+   src/styles/game.css
+   ============================================= */
+
+/* ── Fuentes ──────────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+
+/* ── Variables por tema ───────────────────────────────────────────────────── */
+
+/* Tema oscuro (default) */
+.theme-dark {
+  --bg:           #0f0f13;
+  --surface:      #1a1a22;
+  --surface-2:    #22222e;
+  --border:       #2e2e3e;
+  --text:         #e8e8f0;
+  --text-muted:   #66668a;
+  --accent:       #f0c040;
+  --accent-hover: #ffd060;
+  --correct:      #40c080;
+  --wrong:        #e04040;
+  --btn-primary-bg:   #f0c040;
+  --btn-primary-text: #0f0f13;
+}
+
+/* Tema claro */
+.theme-light {
+  --bg:           #f4f4f0;
+  --surface:      #ffffff;
+  --surface-2:    #ebebeb;
+  --border:       #d0d0d0;
+  --text:         #1a1a22;
+  --text-muted:   #888899;
+  --accent:       #1a6ef5;
+  --accent-hover: #0d5cd4;
+  --correct:      #1e9e5a;
+  --wrong:        #d42020;
+  --btn-primary-bg:   #1a6ef5;
+  --btn-primary-text: #ffffff;
+}
+
+/* Tema fiesta */
+.theme-party {
+  --bg:           #1a0533;
+  --surface:      #2d0f52;
+  --surface-2:    #3d1570;
+  --border:       #6b30c0;
+  --text:         #f8f0ff;
+  --text-muted:   #c080ff;
+  --accent:       #ff4fd8;
+  --accent-hover: #ff80e8;
+  --correct:      #40ffb0;
+  --wrong:        #ff4060;
+  --btn-primary-bg:   #ff4fd8;
+  --btn-primary-text: #1a0533;
+}
+
+/* ── Reset y base ─────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Space Mono', monospace;
+  background-color: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#root {
+  width: 100%;
+  max-width: 480px;
+  padding: 24px 16px 48px;
+}
+
+/* ── Botones base ─────────────────────────────────────────────────────────── */
+
+button {
+  font-family: 'Space Mono', monospace;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.btn {
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.btn--primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+.btn--primary:hover {
+  opacity: 0.85;
+}
+
+.btn--secondary {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn--secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn--verify {
+  background: var(--accent);
+  color: var(--btn-primary-text);
+  padding: 10px 28px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.btn--verify:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* ── Selector de dificultad ───────────────────────────────────────────────── */
+
+.difficulty-group {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.diff-btn {
+  padding: 6px 14px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  border: none;
+  border-right: 1px solid var(--border);
+}
+
+.diff-btn:last-child {
+  border-right: none;
+}
+
+.diff-btn.active {
+  background: var(--accent);
+  color: var(--btn-primary-text);
+  font-weight: 700;
+}
+
+.diff-btn:hover:not(.active) {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+/* ── Toggle de tema ───────────────────────────────────────────────────────── */
+
+.theme-toggle {
+  display: flex;
+  gap: 6px;
+}
+
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 2px solid transparent;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn.active {
+  border-color: var(--accent);
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ── HOME SCREEN ──────────────────────────────────────────────────────────── */
+
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  padding-top: 48px;
+  min-height: 100vh;
+}
+
+.home-header {
+  text-align: center;
+}
+
+.home-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  letter-spacing: 10px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.home-subtitle {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.home-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
+.home-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.home-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+.home-buttons {
+  gap: 10px;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 14px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── GAME BOARD ───────────────────────────────────────────────────────────── */
+
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Header del juego */
+.game-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 6px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* Controles superiores */
+.game-controls {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.new-puzzle-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Info del puzzle */
+.puzzle-info {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.puzzle-badge {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--btn-primary-text);
+  background: var(--accent);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.puzzle-id {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+/* ── TOP GRID ─────────────────────────────────────────────────────────────── */
+
+.top-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.top-grid__row {
+  display: flex;
+  gap: 5px;
+}
+
+/* ── CELL ─────────────────────────────────────────────────────────────────── */
+
+.cell {
+  width: 68px;
+  height: 68px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.cell--correct {
+  background: rgba(64, 192, 128, 0.15);
+  border-color: var(--correct);
+  color: var(--correct);
+}
+
+.cell--wrong {
+  background: rgba(224, 64, 64, 0.12);
+  border-color: var(--wrong);
+  color: var(--wrong);
+}
+
+/* Animación al verificar */
+.cell--correct,
+.cell--wrong {
+  animation: cellPop 0.3s ease;
+}
+
+@keyframes cellPop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* ── SEPARADOR ────────────────────────────────────────────────────────────── */
+
+.grid-separator {
+  width: 100%;
+  max-width: calc(4 * 68px + 3 * 5px + 28px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grid-separator::before,
+.grid-separator::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.grid-separator__label {
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── BOTTOM ROW ───────────────────────────────────────────────────────────── */
+
+.bottom-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  justify-content: center;
+  max-width: calc(4 * 68px + 3 * 5px + 28px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+/* ── BOTTOM CELL ──────────────────────────────────────────────────────────── */
+
+.bottom-cell {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.bottom-cell--given {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.bottom-cell--hidden {
+  background: var(--bg);
+  border: 2px dashed var(--border);
+}
+
+.bottom-cell--hidden:focus-within {
+  border-color: var(--accent);
+  background: rgba(var(--accent), 0.05);
+}
+
+.bottom-cell__input {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--accent);
+  font-family: 'Space Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  /* Ocultar flechas del input number */
+  -moz-appearance: textfield;
+}
+
+.bottom-cell__input::-webkit-outer-spin-button,
+.bottom-cell__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+/* ── FOOTER DEL JUEGO ─────────────────────────────────────────────────────── */
+
+.game-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+/* Cronómetro */
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.timer__icon {
+  font-size: 16px;
+}
+
+.timer__display {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mensaje de éxito */
+.solved-message {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--correct);
+  letter-spacing: 1px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Tema fiesta: efectos extra ───────────────────────────────────────────── */
+
+.theme-party .home-title,
+.theme-party .game-title {
+  background: linear-gradient(90deg, #ff4fd8, #ffcc00, #40ffb0, #4fd8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.theme-party .cell {
+  border-color: #6b30c0;
+}
+
+.theme-party .btn--verify {
+  background: linear-gradient(90deg, #ff4fd8, #ffcc00);
+  color: #1a0533;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 400px) {
+  .cell {
+    width: 58px;
+    height: 58px;
+    font-size: 15px;
+  }
+
+  .bottom-cell {
+    width: 44px;
+    height: 44px;
+    font-size: 13px;
+  }
+
+  .home-title {
+    font-size: 56px;
+  }
+}
