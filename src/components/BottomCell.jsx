@@ -5,46 +5,30 @@
 
 import React from "react"
 
-export default function BottomCell({ value, isHidden, onChange }) {
-  // value:    número actual (puede ser null si está vacío)
-  // isHidden: true = el jugador debe completarla
-  // onChange: función que recibe el nuevo valor
+// isHidden:    true = celda oculta que el jugador completa
+// value:       número actual (null si vacío)
+// isConfirmed: true = tiene par válido confirmado
+// isActive:    true = modal de par abierto sobre esta celda
+// onClick:     callback al hacer click (solo celdas ocultas)
 
+export default function BottomCell({ value, isHidden, isConfirmed, isActive, onClick }) {
   if (!isHidden) {
-    // Celda visible: solo muestra el número
-    return (
-      <div className="bottom-cell bottom-cell--given">
-        {value}
-      </div>
-    )
+    return <div className="bottom-cell bottom-cell--given">{value}</div>
   }
 
-  // Celda oculta: el jugador tipea con teclado físico
-  function handleChange(e) {
-    const raw = e.target.value
-
-    // Permitir borrar
-    if (raw === "" || raw === null) {
-      onChange(null)
-      return
-    }
-
-    const num = parseInt(raw, 10)
-    if (!isNaN(num) && num > 0) {
-      onChange(num)
-    }
-  }
+  let cls = "bottom-cell bottom-cell--hidden"
+  if (isActive)         cls += " bottom-cell--active"
+  else if (isConfirmed) cls += " bottom-cell--confirmed"
 
   return (
-    <div className="bottom-cell bottom-cell--hidden">
-      <input
-        className="bottom-cell__input"
-        type="number"
-        min="1"
-        value={value ?? ""}
-        onChange={handleChange}
-        placeholder="?"
-      />
+    <div
+      className={cls}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => e.key === "Enter" && onClick?.()}
+    >
+      {value ?? "?"}
     </div>
   )
 }

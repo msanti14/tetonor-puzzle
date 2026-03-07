@@ -5,12 +5,18 @@
 
 import React from "react"
 
-export default function Cell({ value, status }) {
-  // status: null | 'correct' | 'wrong'
+// status: 'neutral' | 'green' | 'green-full'
+// labels: string[] — ej: ["3+5", "3×5"]
+
+export default function Cell({ value, status, labels }) {
+  const cls = status && status !== 'neutral' ? `cell--${status}` : ""
 
   return (
-    <div className={`cell ${status ? `cell--${status}` : ""}`}>
-      {value}
+    <div className={`cell ${cls}`}>
+      <span className="cell__value">{value}</span>
+      {labels && labels.length > 0 && (
+        <span className="cell__labels">{labels.join(" · ")}</span>
+      )}
     </div>
   )
 }

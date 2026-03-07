@@ -6,24 +6,28 @@
 import React from "react"
 import BottomCell from "./BottomCell"
 
-export default function BottomRow({ bottomNumbers, hiddenIndices, userAnswers, onAnswerChange }) {
-  // bottomNumbers: array completo (la solución, solo para saber cuántas celdas hay)
-  // hiddenIndices: array de índices que el jugador debe completar
-  // userAnswers:   array paralelo a bottomNumbers con lo que escribió el jugador
-  //                (null en posiciones vacías, número en posiciones completadas)
-  // onAnswerChange(index, value): callback cuando el jugador ingresa un número
+export default function BottomRow({
+  bottomNumbers,   // solución real (longitud de la fila)
+  hiddenIndices,   // índices que el jugador completa
+  userAnswers,     // array paralelo con valores del jugador (null = vacío)
+  confirmedPairs,  // [{ idxA }] — índices con par confirmado
+  activeIndex,     // índice con modal abierto (null si ninguno)
+  onCellClick,     // (idx) => void
+}) {
+  const confirmedSet = new Set(confirmedPairs.map(p => p.idxA))
 
   return (
     <div className="bottom-row">
       {bottomNumbers.map((_, idx) => {
         const isHidden = hiddenIndices.includes(idx)
-
         return (
           <BottomCell
             key={idx}
             value={isHidden ? userAnswers[idx] : bottomNumbers[idx]}
             isHidden={isHidden}
-            onChange={(value) => onAnswerChange(idx, value)}
+            isConfirmed={confirmedSet.has(idx)}
+            isActive={activeIndex === idx}
+            onClick={isHidden ? () => onCellClick(idx) : undefined}
           />
         )
       })}

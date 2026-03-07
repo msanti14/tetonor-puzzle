@@ -4,90 +4,50 @@
 // =============================================
 
 /**
- * Verifica si un valor puede explicarse como a+b o a×b
- * usando dos números de la fila base (ignorando nulls).
- *
- * Los índices i y j pueden ser iguales SOLO si el mismo
- * número aparece más de una vez en la fila.
- *
- * Ejemplos:
- *   canExplain(24, [2, 3, 8, 12]) → true  (2×12 o 3×8)
- *   canExplain(9,  [3, 3, 5])     → true  (3×3)
- *   canExplain(9,  [3, 5, 7])     → false (no hay par válido)
- *   canExplain(24, [2, null, 12]) → true  (2×12, ignora null)
+ * Un par (a, b) es válido para colocarlo en la fila si
+ * tanto a+b como a×b aparecen en topGrid.
  */
-export function canExplain(value, bottomNumbers) {
-  const nums = bottomNumbers.filter(n => n !== null && n !== undefined)
+export function isPairValid(a, b, topGrid) {
+  return topGrid.includes(a + b) && topGrid.includes(a * b)
+}
 
-  for (let i = 0; i < nums.length; i++) {
-    for (let j = i; j < nums.length; j++) {
-      // i === j significa usar el mismo número dos veces:
-      // solo válido si ese número aparece al menos dos veces en la fila
-      if (i === j) {
-        const count = nums.filter(n => n === nums[i]).length
-        if (count < 2) continue
-      }
-      if (nums[i] + nums[j] === value) return true
-      if (nums[i] * nums[j] === value) return true
+/**
+ * Calcula el estado de cada celda de la grilla dado el conjunto
+ * de pares confirmados.
+ *
+ * Devuelve array de 16 objetos:
+ *   { status: 'neutral' | 'green' | 'green-full', labels: string[] }
+ *
+ * - 'neutral'    : ningún par explica esta celda aún
+ * - 'green'      : explicada por suma O producto (pero no ambos)
+ * - 'green-full' : explicada por al menos un par vía suma
+ *                  Y al menos un par vía producto
+ *
+ * confirmedPairs: [{ a, b }]
+ * topGrid:        array de 16 valores
+ */
+export function computeCellStates(confirmedPairs, topGrid) {
+  return topGrid.map(cellValue => {
+    let hasBySum     = false
+    let hasByProduct = false
+    const labels     = []
+
+    for (const { a, b } of confirmedPairs) {
+      if (a + b === cellValue) { hasBySum     = true; labels.push(`${a}+${b}`) }
+      if (a * b === cellValue) { hasByProduct = true; labels.push(`${a}×${b}`) }
     }
-  }
 
-  return false
+    const status = hasBySum && hasByProduct ? 'green-full'
+                 : hasBySum || hasByProduct ? 'green'
+                 : 'neutral'
+
+    return { status, labels: [...new Set(labels)] }
+  })
 }
 
 /**
- * Devuelve todas las expresiones que explican un valor.
- * Útil para mostrar hints al jugador.
- *
- * Ejemplo:
- *   getExplanations(24, [2, 3, 8, 12])
- *   → ["3+21"... no, → ["2×12", "3×8"]
+ * Victoria: todas las celdas en 'green-full'.
  */
-export function getExplanations(value, bottomNumbers) {
-  const nums = bottomNumbers.filter(n => n !== null && n !== undefined)
-  const explanations = []
-
-  for (let i = 0; i < nums.length; i++) {
-    for (let j = i; j < nums.length; j++) {
-      if (i === j) {
-        const count = nums.filter(n => n === nums[i]).length
-        if (count < 2) continue
-      }
-      const a = nums[i]
-      const b = nums[j]
-      if (a + b === value) explanations.push(`${a}+${b}`)
-      if (a * b === value) explanations.push(`${a}×${b}`)
-    }
-  }
-
-  return [...new Set(explanations)]
-}
-
-/**
- * Valida toda la TopGrid contra la fila base actual.
- * Devuelve un array de booleanos, uno por celda.
- *
- * Ejemplo:
- *   validateGrid([24, 5, 100], [2, 3, 8, 12])
- *   → [true, true, false]
- */
-export function validateGrid(topGrid, bottomNumbers) {
-  return topGrid.map(value => canExplain(value, bottomNumbers))
-}
-
-/**
- * Verifica si el puzzle está completamente resuelto:
- * - No hay celdas vacías en la fila
- * - Todos los valores de la grilla están explicados
- *
- * Ejemplo:
- *   isPuzzleSolved([24, 5], [2, 3, 8, 12]) → true
- *   isPuzzleSolved([24, 5], [2, null, 8])  → false (hay null)
- *   isPuzzleSolved([24, 99], [2, 3, 8, 12])→ false (99 no explicado)
- */
-export function isPuzzleSolved(topGrid, bottomNumbers) {
-  const hasEmpty = bottomNumbers.some(n => n === null || n === undefined)
-  if (hasEmpty) return false
-
-  return topGrid.every(value => canExplain(value, bottomNumbers))
+export function isPuzzleSolved(cellStates) {
+  return cellStates.every(c => c.status === 'green-full')
 }
