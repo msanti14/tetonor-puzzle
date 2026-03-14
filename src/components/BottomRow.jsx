@@ -3,10 +3,10 @@
 // src/components/BottomRow.jsx
 // =============================================
 
-import React from "react"
+import React, { useMemo } from "react"
 import BottomCell from "./BottomCell"
 
-export default function BottomRow({
+function BottomRow({
   bottomNumbers,   // solución real (longitud de la fila)
   hiddenIndices,   // índices que el jugador completa
   userAnswers,     // array paralelo con valores del jugador (null = vacío)
@@ -14,7 +14,10 @@ export default function BottomRow({
   activeIndex,     // índice con modal abierto (null si ninguno)
   onCellClick,     // (idx) => void
 }) {
-  const confirmedSet = new Set(confirmedPairs.map(p => p.idxA))
+  const confirmedSet = useMemo(
+    () => new Set(confirmedPairs.map(p => p.idxA)),
+    [confirmedPairs]
+  )
 
   return (
     <div className="bottom-row">
@@ -34,3 +37,5 @@ export default function BottomRow({
     </div>
   )
 }
+
+export default React.memo(BottomRow)

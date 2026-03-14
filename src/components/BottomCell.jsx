@@ -11,7 +11,7 @@ import React from "react"
 // isActive:    true = modal de par abierto sobre esta celda
 // onClick:     callback al hacer click (solo celdas ocultas)
 
-export default function BottomCell({ value, isHidden, isConfirmed, isActive, onClick }) {
+function BottomCell({ value, isHidden, isConfirmed, isActive, onClick }) {
   if (!isHidden) {
     return <div className="bottom-cell bottom-cell--given">{value}</div>
   }
@@ -32,3 +32,5 @@ export default function BottomCell({ value, isHidden, isConfirmed, isActive, onC
     </div>
   )
 }
+
+export default React.memo(BottomCell)

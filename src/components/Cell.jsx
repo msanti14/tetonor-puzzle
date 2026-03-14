@@ -8,7 +8,7 @@ import React from "react"
 // status: 'neutral' | 'green' | 'green-full'
 // labels: string[] — ej: ["3+5", "3×5"]
 
-export default function Cell({ value, status, labels }) {
+function Cell({ value, status, labels }) {
   const cls = status && status !== 'neutral' ? `cell--${status}` : ""
 
   return (
@@ -20,3 +20,5 @@ export default function Cell({ value, status, labels }) {
     </div>
   )
 }
+
+export default React.memo(Cell)

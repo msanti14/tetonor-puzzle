@@ -3,31 +3,15 @@
 // src/components/GameBoard.jsx
 // =============================================
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect, useMemo, useCallback } from "react"
 import TopGrid   from "./TopGrid"
 import BottomRow from "./BottomRow"
 import Controls  from "./Controls"
 import PairModal from "./PairModal"
 import { computeCellStates, isPuzzleSolved } from "../engine/puzzleValidator"
-import puzzles from "../data/puzzles.json"
-
-const DIFF = { 1: "Fácil", 2: "Medio", 3: "Difícil" }
-
-function getRandomPuzzle(difficulty) {
-  const pool = difficulty !== null
-    ? puzzles.filter(p => p.difficulty === difficulty)
-    : puzzles
-  return pool[Math.floor(Math.random() * pool.length)]
-}
-
-function generateHiddenIndices(total, hiddenCount) {
-  const indices = Array.from({ length: total }, (_, i) => i)
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]]
-  }
-  return indices.slice(0, hiddenCount).sort((a, b) => a - b)
-}
+import { getRandomPuzzle, generateHiddenIndices } from "../utils/puzzles"
+import { saveGameStats } from "../utils/stats"
+import { DIFFICULTY_LABELS } from "../constants"
 
 function triggerConfetti() {
   import("canvas-confetti").then(({ default: c }) =>
@@ -62,7 +46,7 @@ export default function GameBoard({
     setConfirmedPairs([])
     setActiveIdx(null)
     setIsSolved(false)
-  }, [puzzle.id])
+  }, [puzzle.id, puzzle.bottomNumbers.length, puzzle.hiddenCount, savedHiddenIndices, savedAnswers])
 
   // Estado de las celdas de la grilla — recalculado en cada render
   const cellStates = useMemo(
@@ -72,19 +56,19 @@ export default function GameBoard({
 
   // Victoria — verificar DESPUÉS de que cellStates se actualice
   useEffect(() => {
-    if (confirmedPairs.length > 0 && isPuzzleSolved(cellStates)) {
+    if (confirmedPairs.length > 0 && isPuzzleSolved(cellStates, confirmedPairs, puzzle.bottomNumbers, hiddenIndices)) {
       setIsSolved(true)
       timer.pause()
+      saveGameStats(puzzle, timer.elapsed, true)
       triggerConfetti()
     }
-  }, [cellStates])
+  }, [cellStates, confirmedPairs, puzzle.bottomNumbers, hiddenIndices, timer, puzzle])
 
-  function handlePairConfirm(value, idxA, idxB) {
+  const handlePairConfirm = useCallback((value, idxA, idxB) => {
     const newAnswers = [...userAnswers]
     newAnswers[idxA] = value
     setUserAnswers(newAnswers)
 
-    // Reemplazar par anterior de esta celda si existía
     const bValue = hiddenIndices.includes(idxB) ? userAnswers[idxB] : puzzle.bottomNumbers[idxB]
     const newPairs = [
       ...confirmedPairs.filter(p => p.idxA !== idxA),
@@ -93,9 +77,9 @@ export default function GameBoard({
     setConfirmedPairs(newPairs)
     setActiveIdx(null)
     onSaveSession(puzzle, newAnswers, hiddenIndices)
-  }
+  }, [userAnswers, hiddenIndices, confirmedPairs, puzzle, onSaveSession])
 
-  function handleReset() {
+  const handleReset = useCallback(() => {
     const hidden      = generateHiddenIndices(puzzle.bottomNumbers.length, puzzle.hiddenCount)
     const emptyAnswers = Array(puzzle.bottomNumbers.length).fill(null)
     setHiddenIndices(hidden)
@@ -105,7 +89,14 @@ export default function GameBoard({
     setIsSolved(false)
     timer.reset()
     onSaveSession(puzzle, emptyAnswers, hidden)
-  }
+  }, [puzzle, timer, onSaveSession])
+
+  const handleNewPuzzle = useCallback(() => {
+    const next = getRandomPuzzle(selectedDiff)
+    if (next) onStartNew(next)
+  }, [selectedDiff, onStartNew])
+
+  const handleCancelPair = useCallback(() => setActiveIdx(null), [])
 
   return (
     <div className="game-layout">
@@ -127,19 +118,18 @@ export default function GameBoard({
                   className={`diff-btn ${selectedDiff === level ? "active" : ""}`}
                   onClick={() => setSelectedDiff(prev => prev === level ? null : level)}
                 >
-                  {DIFF[level]}
+                  {DIFFICULTY_LABELS[level]}
                 </button>
               ))}
             </div>
-            <button className="btn btn--primary"
-              onClick={() => onStartNew(getRandomPuzzle(selectedDiff))}>
+            <button className="btn btn--primary" onClick={handleNewPuzzle}>
               🎲 Nuevo
             </button>
           </div>
         </div>
 
         <div className="puzzle-info">
-          <span className="puzzle-badge">{DIFF[puzzle.difficulty]}</span>
+          <span className="puzzle-badge">{DIFFICULTY_LABELS[puzzle.difficulty]}</span>
           <span className="puzzle-id">#{puzzle.id}</span>
         </div>
 
@@ -199,7 +189,7 @@ export default function GameBoard({
           userAnswers={userAnswers}
           topGrid={puzzle.topGrid}
           onConfirm={handlePairConfirm}
-          onCancel={() => setActiveIdx(null)}
+          onCancel={handleCancelPair}
         />
       )}
 

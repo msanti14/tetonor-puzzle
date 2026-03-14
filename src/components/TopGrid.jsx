@@ -8,7 +8,7 @@ import Cell from "./Cell"
 
 // cellStates: array de 16 { status, labels } | null
 
-export default function TopGrid({ topGrid, cellStates }) {
+function TopGrid({ topGrid, cellStates }) {
   const rows = []
   for (let i = 0; i < 16; i += 4) rows.push(topGrid.slice(i, i + 4))
 
@@ -33,3 +33,5 @@ export default function TopGrid({ topGrid, cellStates }) {
     </div>
   )
 }
+
+export default React.memo(TopGrid)

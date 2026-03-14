@@ -4,8 +4,7 @@
 // =============================================
 
 import { useState, useEffect, useRef } from "react"
-
-const STORAGE_KEY = "tetonor_timer"
+import { TIMER_KEY } from "../constants"
 
 export function useTimer(puzzleId) {
   const [elapsed, setElapsed]   = useState(0)
@@ -27,7 +26,7 @@ export function useTimer(puzzleId) {
 
   function saveStorage(ms) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      localStorage.setItem(TIMER_KEY, JSON.stringify({
         puzzleId: puzzleIdRef.current,
         elapsed: ms,
       }))
@@ -36,7 +35,7 @@ export function useTimer(puzzleId) {
 
   function loadStorage(id) {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY)
+      const raw = localStorage.getItem(TIMER_KEY)
       if (!raw) return 0
       const data = JSON.parse(raw)
       return data.puzzleId === id ? (data.elapsed || 0) : 0
@@ -56,9 +55,7 @@ export function useTimer(puzzleId) {
     saveStorage(total)
   }
 
-  
   function resume() {
-    console.log("resume - baseRef:", baseRef.current, "startRef:", startRef.current)
     if (startRef.current) return
     startRef.current = Date.now()
     setIsRunning(true)
@@ -74,7 +71,7 @@ export function useTimer(puzzleId) {
     startRef.current = null
     setElapsed(0)
     setIsRunning(false)
-    try { localStorage.removeItem(STORAGE_KEY) } catch { /* ignorar */ }
+    try { localStorage.removeItem(TIMER_KEY) } catch { /* ignorar */ }
   }
 
   // ── Cuando cambia el puzzleId ──────────────────────────────────────────────
@@ -99,10 +96,15 @@ export function useTimer(puzzleId) {
 
   // ── Page Visibility ────────────────────────────────────────────────────────
 
+  const pauseRef = useRef(pause)
+  const resumeRef = useRef(resume)
+  pauseRef.current = pause
+  resumeRef.current = resume
+
   useEffect(() => {
     function handleVisibility() {
-      if (document.hidden) pause()
-      else if (puzzleIdRef.current) resume()
+      if (document.hidden) pauseRef.current()
+      else if (puzzleIdRef.current) resumeRef.current()
     }
     document.addEventListener("visibilitychange", handleVisibility)
     return () => document.removeEventListener("visibilitychange", handleVisibility)

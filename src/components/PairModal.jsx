@@ -3,8 +3,7 @@
 // src/components/PairModal.jsx
 // =============================================
 
-import React, { useState } from "react"
-import { isPairValid } from "../engine/puzzleValidator"
+import React, { useState, useMemo } from "react"
 
 // activeIdx:    índice de la celda oculta que se edita
 // currentValue: valor actual de esa celda (null si vacío)
@@ -46,6 +45,8 @@ export default function PairModal({
     })
     .filter(Boolean)
 
+  const topGridSet = useMemo(() => new Set(topGrid), [topGrid])
+
   const a = parseInt(inputValue, 10)
   const selectedCandidate = candidates.find(c => c.idx === selectedB)
   const b = selectedCandidate?.value
@@ -55,8 +56,8 @@ export default function PairModal({
   if (!isNaN(a) && a > 0 && b != null) {
     const sum         = a + b
     const product     = a * b
-    const sumInGrid   = topGrid.includes(sum)
-    const prodInGrid  = topGrid.includes(product)
+    const sumInGrid   = topGridSet.has(sum)
+    const prodInGrid  = topGridSet.has(product)
     preview = { sum, product, sumInGrid, prodInGrid }
   }
 
@@ -70,7 +71,7 @@ export default function PairModal({
     if (!selectedCandidate) {
       setError("Par inválido."); return
     }
-    if (!isPairValid(a, b, topGrid)) {
+    if (!topGridSet.has(a + b) || !topGridSet.has(a * b)) {
       setError(`${a} y ${b} no cubren suma Y producto en la grilla.`); return
     }
     setError("")

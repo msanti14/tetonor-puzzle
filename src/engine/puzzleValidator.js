@@ -46,8 +46,34 @@ export function computeCellStates(confirmedPairs, topGrid) {
 }
 
 /**
- * Victoria: todas las celdas en 'green-full'.
+ * Verifica que todos los números de la fila inferior hayan sido usados
+ * como operandos en los pares confirmados.
+ *
+ * Se requiere que al menos el 80% de los números visibles (no ocultos)
+ * hayan sido usados como operandos.
  */
-export function isPuzzleSolved(cellStates) {
-  return cellStates.every(c => c.status === 'green-full')
+export function areAllBottomNumbersUsed(confirmedPairs, bottomNumbers, hiddenIndices) {
+  const visibleNumbers = bottomNumbers.filter((_, index) => !hiddenIndices.includes(index))
+
+  const usedNumbers = new Set()
+  confirmedPairs.forEach(({ a, b }) => {
+    usedNumbers.add(a)
+    usedNumbers.add(b)
+  })
+
+  const usedVisibleCount = visibleNumbers.filter(num => usedNumbers.has(num)).length
+  const requiredCount = Math.ceil(visibleNumbers.length * 0.8)
+
+  return usedVisibleCount >= requiredCount
+}
+
+/**
+ * Victoria: todas las celdas en 'green-full' Y al menos el 80% de los números
+ * visibles de la fila inferior han sido usados como operandos en pares confirmados.
+ */
+export function isPuzzleSolved(cellStates, confirmedPairs, bottomNumbers, hiddenIndices) {
+  const allCellsGreen = cellStates.every(c => c.status === 'green-full')
+  const allBottomNumbersUsed = areAllBottomNumbersUsed(confirmedPairs, bottomNumbers, hiddenIndices)
+
+  return allCellsGreen && allBottomNumbersUsed
 }

@@ -3,14 +3,13 @@
 // src/App.jsx
 // =============================================
 
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback, useRef } from "react"
 import HomeScreen from "./components/HomeScreen"
 import GameBoard  from "./components/GameBoard"
 import ThemeBar   from "./components/ThemeBar"
 import { useTimer } from "./hooks/useTimer"
-
-const SESSION_KEY = "tetonor_session"
-const THEME_KEY   = "tetonor_theme"
+import { getRandomPuzzle } from "./utils/puzzles"
+import { SESSION_KEY, THEME_KEY } from "./constants"
 
 export function saveSession(puzzle, userAnswers, hiddenIndices) {
   try {
@@ -50,6 +49,8 @@ export default function App() {
   })
 
   const timer = useTimer(activePuzzle?.id ?? null)
+  const timerRef = useRef(timer)
+  timerRef.current = timer
 
   // Aplicar tema al body
   useEffect(() => {
@@ -57,28 +58,30 @@ export default function App() {
     try { localStorage.setItem(THEME_KEY, theme) } catch { /* ignorar */ }
   }, [theme])
 
-  function startPuzzle(puzzle) {
-    setActivePuzzle(puzzle)
+  const startPuzzle = useCallback((puzzle) => {
+    const p = puzzle ?? getRandomPuzzle(null)
+    if (!p) return
+    setActivePuzzle(p)
     setSavedAnswers(null)
     setSavedHidden(null)
-    timer.reset()
+    timerRef.current.reset()
     setScreen("game")
-  }
+  }, [])
 
-  function handleResume() {
+  const handleResume = useCallback(() => {
     const session = loadSession()
     if (!session) return
     setActivePuzzle(session.puzzle)
     setSavedAnswers(session.userAnswers)
     setSavedHidden(session.hiddenIndices)
     setScreen("game")
-    setTimeout(() => timer.resume(), 50)
-  }
+    // El useTimer arranca automáticamente al cambiar puzzleId
+  }, [])
 
-  function handleGoHome() {
-    timer.pause()
+  const handleGoHome = useCallback(() => {
+    timerRef.current.pause()
     setTimeout(() => setScreen("home"), 20)
-  }
+  }, [])
 
   return (
     <div className={`app theme-${theme}`}>

@@ -4,22 +4,12 @@
 // =============================================
 
 import React, { useState, useEffect } from "react"
-import puzzles from "../data/puzzles.json"
-
-function getDailyPuzzle() {
-  const today = new Date()
-  const seed  = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
-  return puzzles[seed % puzzles.length]
-}
-
-function getRandomPuzzle(difficulty) {
-  const pool = difficulty !== null ? puzzles.filter(p => p.difficulty === difficulty) : puzzles
-  return pool[Math.floor(Math.random() * pool.length)]
-}
+import { getDailyPuzzle, getRandomPuzzle } from "../utils/puzzles"
+import { SESSION_KEY, DIFFICULTY_LABELS } from "../constants"
 
 function hasTodaySession() {
   try {
-    const raw  = localStorage.getItem("tetonor_session")
+    const raw  = localStorage.getItem(SESSION_KEY)
     if (!raw) return false
     const data = JSON.parse(raw)
     return data.date === new Date().toDateString() && data.puzzleId !== undefined
@@ -90,8 +80,6 @@ function GamePreview() {
 }
 
 // ── Componente principal ──────────────────────────────────────────────────────
-
-const DIFFICULTY_LABELS = { 1: "Fácil", 2: "Medio", 3: "Difícil" }
 
 export default function HomeScreen({ onStartDaily, onStartNew, onResume }) {
   const [selectedDifficulty, setSelectedDifficulty] = useState(null)
