@@ -166,7 +166,7 @@ export default function Controls({ onReset, mobileMode = false }) {
           className="notes-area notes-area--panel"
           value={notes}
           onChange={e => setNotes(e.target.value)}
-          placeholder="Anotá tus cálculos acá..."
+          placeholder="Anotá acá tus razonamientos o lo que sea que te ayude..."
         />
       </div>
 

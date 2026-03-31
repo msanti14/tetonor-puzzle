@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/tetonor-puzzle/',
   test: {
     environment: 'jsdom',
     globals: true,
